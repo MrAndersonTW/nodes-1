@@ -72,6 +72,7 @@ jobs:
         draft: false
         prerelease: false
     - name: Upload Release Asset
+      if: startsWith(github.ref, 'refs/heads/release/')
       id: upload_release_asset 
       uses: actions/upload-release-asset@v1
       with:

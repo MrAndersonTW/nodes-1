@@ -80,13 +80,11 @@ jobs:
         run: ls -R
                 
       - name: Extract version tag
-        if: startsWith(github.ref, 'refs/heads/release/')
         shell: bash
         run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/release/}"
         id: extract_version_tag
         
       - name: Create Release
-        if: startsWith(github.ref, 'refs/heads/release/')
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -98,12 +96,11 @@ jobs:
           prerelease: false
       
       - name: Upload Release Asset
-        if: startsWith(github.ref, 'refs/heads/release/')
         id: upload_release_asset 
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./*
+          file: twnodes-*
           tag: ${{ steps.extract_version_tag.outputs.branch }}
           overwrite: true
           file_glob: true

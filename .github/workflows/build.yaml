@@ -54,12 +54,20 @@ jobs:
         ${{ matrix.cmake-path }}cmake --build . --config Release ${{ matrix.build-args }} --target package_default
         mkdir artifacts
         mv ${{ matrix.package-file }} artifacts
+        
     - name: Upload Artifacts
       uses: actions/upload-artifact@v1
       with:
         name: twnodes-${{ matrix.os }}
         path: release/artifacts
-    
+        
+    - name: send message
+      uses: appleboy/discord-action@master
+      with:
+        webhook_id: ${{ secrets.WEBHOOK_ID }}
+        webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
+        message: build-cmake successful
+
         
   create_release:
     name: Create release
@@ -77,12 +85,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: twnodes-*
-          path: release/artifacts
 
       - name: Display structure of downloaded files
         run: ls -R
-        working-directory: release/artifact
-        
+                
       - name: Extract version tag
         if: startsWith(github.ref, 'refs/heads/release/')
         shell: bash

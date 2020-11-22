@@ -61,14 +61,6 @@ jobs:
         name: twnodes-${{ matrix.os }}
         path: release/artifacts
         
-    - name: send message
-      uses: appleboy/discord-action@master
-      with:
-        webhook_id: ${{ secrets.WEBHOOK_ID }}
-        webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
-        message: build-cmake successful
-
-        
   create_release:
     name: Create release
     runs-on: ubuntu-latest
@@ -83,8 +75,6 @@ jobs:
       - name: Download artifacts
         id: download_artifacts
         uses: actions/download-artifact@v2
-        with:
-          name: twnodes-*
 
       - name: Display structure of downloaded files
         run: ls -R
@@ -117,3 +107,10 @@ jobs:
           tag: ${{ steps.extract_version_tag.outputs.branch }}
           overwrite: true
           file_glob: true
+          
+      - name: send message
+        uses: appleboy/discord-action@master
+        with:
+          webhook_id: ${{ secrets.WEBHOOK_ID }}
+          webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
+          message: Version ${{ steps.extract_version_tag.outputs.branch }} has been released.

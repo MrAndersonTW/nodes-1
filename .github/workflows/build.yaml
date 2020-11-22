@@ -58,5 +58,20 @@ jobs:
     - name: Extract version tag
       if: startsWith(github.ref, 'refs/heads/release/')
       shell: bash
-      run: echo "##[set-output name=version-tag;]$(echo ${GITHUB_REF#refs/heads/release/})"
-      id: extract-version-tag
+      run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/release/}"
+      id: extract_version_tag
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/heads/release/')
+      id: create_release
+      uses: actions/create-release@v1
+      with:
+        tag_name: ${{ steps.extract_version_tag.outputs.branch }}
+        release_name: Release ${{ steps.extract_version_tag.outputs.branch }}
+        draft: false
+        prerelease: false
+    - name: Upload Release Asset
+      id: upload_release_asset 
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./
